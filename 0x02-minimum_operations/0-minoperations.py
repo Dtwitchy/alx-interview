@@ -3,7 +3,8 @@
 
 
 def minOperations(n):
-    ''' it calculate the fewest number of operation that is needed to result in exactly n H
+    ''' it calculate the fewest number of operation that is needed
+    to result in exactly n H
     characters in this file
     Returns: Integer : if n is not possible to achieve, return 0
     '''
@@ -29,8 +30,11 @@ def minOperations(n):
             continue
 
         remaining = n - pasted_chars  # remaining chararacters to Paste
-        # check if not possible by checking if clipboard has more than what is needed to reach the number that's desire
-        # which also means number of characters in the file is equal or more than in the clipboard. in both situations it's not possible to achieve number of characters
+        # check if not possible by checking if clipboard has more than
+        # what is needed to reach the number that's desire
+        # which also means number of characters in the file is equal or
+        # more than in the clipboard. in both situations it's not possible
+        # to achieve number of characters
         if remaining < clipboard:
             return 0
 
