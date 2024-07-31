@@ -1,93 +1,55 @@
 #!/usr/bin/python3
-'''
-N Queens Challenge
-'''
-
+""" N queens problem
+"""
 import sys
 
+if len(sys.argv) != 2:
+    print("Usage: nqueens N")
+    exit(1)
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: nqueens N")
-        sys.exit(1)
+try:
+    number_q = int(sys.argv[1])
+except ValueError:
+    print("N must be a number")
+    exit(1)
 
-    try:
-        n = int(sys.argv[1])
-    except ValueError:
-        print('N must be a number')
-        exit(1)
+if number_q < 4:
+    print("N must be at least 4")
+    exit(1)
 
-    if n < 4:
-        print('N must be at least 4')
-        exit(1)
 
-    solutions = []
-    placed_queens = []  # coordinates format [row, column]
-    stop = False
-    r = 0
-    c = 0
+def solve_nqueens(number):
+    """ solve n queens problem
+    """
+    if number == 0:
+        return [[]]
+    inner_solution = solve_nqueens(number - 1)
+    return [solution + [(number, i + 1)]
+            for i in range(number_q)
+            for solution in inner_solution
+            if safe_queen((number, i + 1), solution)]
 
-    # iterate thru rows
-    while r < n:
-        goback = False
-        # iterate thru columns
-        while c < n:
-            # check is current column is safe
-            safe = True
-            for cord in placed_queens:
-                col = cord[1]
-                if(col == c or col + (r-cord[0]) == c or
-                        col - (r-cord[0]) == c):
-                    safe = False
-                    break
 
-            if not safe:
-                if c == n - 1:
-                    goback = True
-                    break
-                c += 1
-                continue
+def attack_queen(square, queen):
+    """ check if queen is attacking another gouine
+    """
+    (first_row, first_col) = square
+    (second_row, second_col) = queen
+    return (first_row == second_row) or (first_col == second_col) or\
+        abs(first_row - second_row) == abs(first_col - second_col)
 
-            # place queen
-            cords = [r, c]
-            placed_queens.append(cords)
-            # if last row, append solution and reset all to last unfinished row
-            # and last safe column in that row
-            if r == n - 1:
-                solutions.append(placed_queens[:])
-                for cord in placed_queens:
-                    if cord[1] < n - 1:
-                        r = cord[0]
-                        c = cord[1]
-                for i in range(n - r):
-                    placed_queens.pop()
-                if r == n - 1 and c == n - 1:
-                    placed_queens = []
-                    stop = True
-                r -= 1
-                c += 1
-            else:
-                c = 0
-            break
-        if stop:
-            break
-        # on fail: go back to previous row
-        # and continue from last safe column + 1
-        if goback:
-            r -= 1
-            while r >= 0:
-                c = placed_queens[r][1] + 1
-                del placed_queens[r]  # delete previous queen coordinates
-                if c < n:
-                    break
-                r -= 1
-            if r < 0:
-                break
-            continue
-        r += 1
 
-    for idx, val in enumerate(solutions):
-        if idx == len(solutions) - 1:
-            print(val, end='')
-        else:
-            print(val)
+def safe_queen(square, queens):
+    """ check if queen is safe
+    """
+    for queen in queens:
+        if attack_queen(square, queen):
+            return False
+    return True
+
+
+for answer in reversed(solve_nqueens(number_q)):
+    result = []
+    for answer_list in [list(answer_list) for answer_list in answer]:
+        result.append([i - 1 for i in answer_list])
+    print(result)
